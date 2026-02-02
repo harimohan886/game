@@ -17,27 +17,43 @@ jobs:
       - name: Create assets directory
         run: mkdir -p assets metrics
 
-      - name: Generate GitHub Stats
-        uses: anuraghazra/github-readme-stats@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          show_icons: true
-          theme: dark
-          include_all_commits: true
-
-      - name: Generate DevOps Workflow Visualization
+      - name: Generate deployment metrics
         run: |
-          echo "## CI/CD Pipeline Status" > metrics/pipeline-status.md
-          echo "Last Updated: $(date)" >> metrics/pipeline-status.md
+          cat > metrics/README.md << 'EOF'
+          # DevOps Metrics Dashboard
           
-      - name: Collect deployment metrics
-        run: |
-          # Example: Track deployment frequency
-          echo "Deployments this week: $(git log --since='7 days ago' --grep='deploy' --oneline | wc -l)" >> metrics/pipeline-status.md
+          ## 📊 GitHub Stats
+          ![GitHub Stats](https://github-readme-stats.vercel.app/api?username=${{ github.repository_owner }}&show_icons=true&theme=dark&include_all_commits=true)
+          
+          ## 🔥 Streak Stats
+          ![GitHub Streak](https://github-readme-streak-stats.herokuapp.com/?user=${{ github.repository_owner }}&theme=dark)
+          
+          ## 📈 Activity Graph
+          ![Activity Graph](https://github-readme-activity-graph.vercel.app/graph?username=${{ github.repository_owner }}&theme=github-dark)
+          
+          ## Pipeline Metrics
+          - **Last Updated**: $(date '+%Y-%m-%d %H:%M:%S UTC')
+          - **Deployments (Last 7 Days)**: $(git log --since='7 days ago' --grep='deploy\|release' --oneline 2>/dev/null | wc -l)
+          - **Commits (Last 7 Days)**: $(git log --since='7 days ago' --oneline 2>/dev/null | wc -l)
+          - **Total Workflow Runs**: ${{ github.run_number }}
+          EOF
 
-      - name: Generate infrastructure diagram
-        uses: terraform-docs/gh-actions@v1
-        if: hashFiles('**/*.tf') != ''
+      - name: Generate workflow status badge
+        run: |
+          echo "[![Metrics Update](https://github.com/${{ github.repository }}/actions/workflows/metrics.yml/badge.svg)](https://github.com/${{ github.repository }}/actions/workflows/metrics.yml)" >> metrics/README.md
+
+      - name: Check for Terraform files
+        id: check-tf
+        run: |
+          if [ -n "$(find . -name '*.tf' -type f 2>/dev/null)" ]; then
+            echo "has_terraform=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_terraform=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate Terraform docs
+        if: steps.check-tf.outputs.has_terraform == 'true'
+        uses: terraform-docs/gh-actions@v1.0.0
         with:
           working-dir: .
           output-file: assets/infrastructure.md
@@ -47,5 +63,4 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add -A
-          git diff --quiet && git diff --staged --quiet || git commit -m "chore: update DevOps metrics [skip ci]"
-          git push
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update DevOps metrics [skip ci]" && git push)
