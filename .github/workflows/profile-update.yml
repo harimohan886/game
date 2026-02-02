@@ -1,7 +1,7 @@
 name: Update DevOps Profile
 on:
   schedule:
-    - cron: "0 0 * * *"  # Daily at midnight UTC
+    - cron: "0 0 * * *"
   workflow_dispatch:
 permissions:
   contents: write
@@ -17,15 +17,16 @@ jobs:
       - name: Create directories
         run: mkdir -p assets
 
-      - name: Generate DevOps contribution snake
+      - name: Generate contribution snake
         uses: Platane/snk@v3
         with:
           github_user_name: ${{ github.repository_owner }}
           outputs: |
-            assets/github-contribution-grid-snake.svg
-            assets/github-contribution-grid-snake-dark.svg?palette=github-dark
+            assets/github-snake.svg
+            assets/github-snake-dark.svg?palette=github-dark
+            assets/ocean.gif?color_snake=orange&color_dots=#bfd6f6,#8dbdff,#64a1f4,#4b91f1,#3c7dd9
 
-      - name: Generate profile metrics
+      - name: Generate detailed metrics
         uses: lowlighter/metrics@latest
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -34,63 +35,220 @@ jobs:
           base: header, activity, community, repositories, metadata
           config_timezone: Asia/Kolkata
           plugin_isocalendar: yes
-          plugin_isocalendar_duration: half-year
+          plugin_isocalendar_duration: full-year
           plugin_languages: yes
+          plugin_languages_analysis_timeout: 15
+          plugin_languages_categories: markup, programming
           plugin_languages_colors: github
+          plugin_languages_limit: 8
+          plugin_languages_recent_categories: markup, programming
+          plugin_languages_recent_days: 14
+          plugin_languages_recent_load: 300
+          plugin_languages_sections: most-used
           plugin_languages_threshold: 0%
-          filename: assets/metrics.svg
+          plugin_notable: yes
+          plugin_notable_from: organization
+          plugin_activity: yes
+          plugin_activity_days: 14
+          plugin_activity_filter: all
+          plugin_activity_limit: 5
+          plugin_activity_load: 300
+          plugin_activity_visibility: all
+          filename: assets/github-metrics.svg
+          config_output: svg
 
-      - name: Update README with DevOps stats
+      - name: Generate language stats
+        uses: lowlighter/metrics@latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          user: ${{ github.repository_owner }}
+          template: classic
+          base: ""
+          config_timezone: Asia/Kolkata
+          plugin_languages: yes
+          plugin_languages_indepth: yes
+          plugin_languages_details: percentage
+          plugin_languages_limit: 8
+          plugin_languages_analysis_timeout: 15
+          filename: assets/language-stats.svg
+
+      - name: Create stylish README
         run: |
           cat > README.md << 'EOF'
-          # 👨‍💻 DevOps Engineer | Cloud & Automation Specialist
-          
-          ## 📊 GitHub Activity
-          
-          ![Snake animation](assets/github-contribution-grid-snake-dark.svg)
-          
-          ## 📈 Profile Metrics
-          
-          ![Metrics](assets/metrics.svg)
-          
-          ## 🔥 GitHub Stats
-          
           <div align="center">
-            <img height="180em" src="https://github-readme-stats.vercel.app/api?username=${{ github.repository_owner }}&show_icons=true&theme=tokyonight&include_all_commits=true&count_private=true"/>
-            <img height="180em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=${{ github.repository_owner }}&layout=compact&langs_count=8&theme=tokyonight"/>
+            <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=180&section=header&text=DevOps%20Engineer&fontSize=42&fontColor=fff&animation=twinkling&fontAlignY=32" width="100%"/>
           </div>
+
+          <div align="center">
+            
+          ## 🚀 Cloud Architect | Infrastructure Automation Expert | CI/CD Specialist
           
-          ## 🛠️ DevOps Tech Stack
-          
-          ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-          ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
-          ![Terraform](https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)
-          ![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
-          ![Azure](https://img.shields.io/badge/Azure-0089D6?style=for-the-badge&logo=microsoft-azure&logoColor=white)
-          ![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
-          ![Ansible](https://img.shields.io/badge/Ansible-EE0000?style=for-the-badge&logo=ansible&logoColor=white)
-          ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
-          ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-          ![Bash](https://img.shields.io/badge/Bash-4EAA25?style=for-the-badge&logo=gnu-bash&logoColor=white)
-          ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
-          
-          ## 📫 Connect with Me
-          
-          [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/yourprofile)
-          [![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/yourhandle)
-          [![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:your.email@example.com)
-          
+          <p align="center">
+            <em>"Automating the world, one pipeline at a time"</em>
+          </p>
+
+          [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=2E9EF7&center=true&vCenter=true&width=435&lines=DevOps+Engineer;Cloud+Infrastructure+Expert;Kubernetes+%26+Docker+Enthusiast;CI%2FCD+Pipeline+Architect;Infrastructure+as+Code+Advocate)](https://git.io/typing-svg)
+
+          </div>
+
           ---
+
+          ## 📊 GitHub Analytics
+
+          <p align="center">
+            <img height="180em" src="https://github-readme-stats-sigma-five.vercel.app/api?username=${{ github.repository_owner }}&show_icons=true&theme=algolia&include_all_commits=true&count_private=true&hide_border=true&bg_color=0D1117&title_color=58A6FF&icon_color=1F6FEB&text_color=C9D1D9"/>
+            <img height="180em" src="https://github-readme-stats-sigma-five.vercel.app/api/top-langs/?username=${{ github.repository_owner }}&layout=compact&langs_count=10&theme=algolia&hide_border=true&bg_color=0D1117&title_color=58A6FF&text_color=C9D1D9"/>
+          </p>
+
+          <p align="center">
+            <img src="https://github-readme-streak-stats.herokuapp.com/?user=${{ github.repository_owner }}&theme=algolia&hide_border=true&background=0D1117&stroke=58A6FF&ring=58A6FF&fire=FF6B6B&currStreakLabel=C9D1D9" alt="GitHub Streak"/>
+          </p>
+
+          <details open>
+          <summary>📈 <b>Detailed Metrics</b></summary>
+          <br>
+          <p align="center">
+            <img src="./assets/github-metrics.svg" alt="Metrics" width="100%"/>
+          </p>
+          </details>
+
+          <details>
+          <summary>💻 <b>Language Statistics</b></summary>
+          <br>
+          <p align="center">
+            <img src="./assets/language-stats.svg" alt="Languages" width="100%"/>
+          </p>
+          </details>
+
+          ---
+
+          ## 🐍 Contribution Graph
+
+          <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="./assets/github-snake-dark.svg">
+            <source media="(prefers-color-scheme: light)" srcset="./assets/github-snake.svg">
+            <img alt="github contribution grid snake animation" src="./assets/github-snake.svg">
+          </picture>
+
+          ---
+
+          ## 🛠️ Tech Stack & Tools
+
+          <div align="center">
+
+          ### ☁️ Cloud Platforms
+          ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
+          ![Azure](https://img.shields.io/badge/azure-%230072C6.svg?style=for-the-badge&logo=microsoftazure&logoColor=white)
+          ![Google Cloud](https://img.shields.io/badge/GoogleCloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white)
+          ![DigitalOcean](https://img.shields.io/badge/DigitalOcean-%230167ff.svg?style=for-the-badge&logo=digitalOcean&logoColor=white)
+
+          ### 🔧 DevOps & Tools
+          ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+          ![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white)
+          ![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)
+          ![Ansible](https://img.shields.io/badge/ansible-%231A1918.svg?style=for-the-badge&logo=ansible&logoColor=white)
+          ![Jenkins](https://img.shields.io/badge/jenkins-%232C5263.svg?style=for-the-badge&logo=jenkins&logoColor=white)
+          ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
+          ![ArgoCD](https://img.shields.io/badge/argo-EF7B4D.svg?style=for-the-badge&logo=argo&logoColor=white)
+          ![GitLab CI](https://img.shields.io/badge/gitlab%20ci-%23181717.svg?style=for-the-badge&logo=gitlab&logoColor=white)
+
+          ### 📊 Monitoring & Logging
+          ![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=Prometheus&logoColor=white)
+          ![Grafana](https://img.shields.io/badge/grafana-%23F46800.svg?style=for-the-badge&logo=grafana&logoColor=white)
+          ![Datadog](https://img.shields.io/badge/datadog-%23632CA6.svg?style=for-the-badge&logo=datadog&logoColor=white)
+          ![ElasticSearch](https://img.shields.io/badge/-ElasticSearch-005571?style=for-the-badge&logo=elasticsearch)
+
+          ### 💾 Databases
+          ![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
+          ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+          ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+          ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
+
+          ### 🔐 Security & Compliance
+          ![Vault](https://img.shields.io/badge/vault-FFEC6E.svg?style=for-the-badge&logo=vault&logoColor=black)
+          ![SonarQube](https://img.shields.io/badge/SonarQube-black?style=for-the-badge&logo=sonarqube&logoColor=4E9BCD)
+          ![Snyk](https://img.shields.io/badge/Snyk-4C4A73?style=for-the-badge&logo=snyk&logoColor=white)
+
+          ### 💻 Languages & Scripting
+          ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+          ![Shell Script](https://img.shields.io/badge/shell_script-%23121011.svg?style=for-the-badge&logo=gnu-bash&logoColor=white)
+          ![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)
+          ![YAML](https://img.shields.io/badge/yaml-%23ffffff.svg?style=for-the-badge&logo=yaml&logoColor=151515)
+
+          ### 🖥️ Operating Systems
+          ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
+          ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
+          ![Red Hat](https://img.shields.io/badge/Red%20Hat-EE0000?style=for-the-badge&logo=redhat&logoColor=white)
+
+          </div>
+
+          ---
+
+          ## 🏆 GitHub Trophies
+
+          <p align="center">
+            <img src="https://github-profile-trophy.vercel.app/?username=${{ github.repository_owner }}&theme=algolia&no-frame=true&no-bg=true&margin-w=4&column=7" alt="Trophies"/>
+          </p>
+
+          ---
+
+          ## 📈 Activity Graph
+
+          <p align="center">
+            <img src="https://github-readme-activity-graph.vercel.app/graph?username=${{ github.repository_owner }}&theme=react-dark&hide_border=true&area=true" width="100%"/>
+          </p>
+
+          ---
+
+          ## 💼 Professional Highlights
+```yaml
+          role: DevOps Engineer
+          focus:
+            - Cloud Infrastructure Design & Implementation
+            - CI/CD Pipeline Automation
+            - Kubernetes Orchestration
+            - Infrastructure as Code (IaC)
+            - Monitoring & Observability
+            - Security & Compliance
           
-          ![Profile Views](https://komarev.com/ghpvc/?username=${{ github.repository_owner }}&color=blue&style=flat-square)
-          ![Last Updated](https://img.shields.io/badge/Last%20Updated-$(date +%Y---%m---%d)-brightgreen?style=flat-square)
+          achievements:
+            - Reduced deployment time by 80% through automation
+            - Achieved 99.9% uptime for production systems
+            - Implemented zero-downtime deployment strategies
+            - Built scalable infrastructure serving millions of users
+```
+
+          ---
+
+          ## 📫 Let's Connect
+
+          <div align="center">
+
+          [![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/yourprofile)
+          [![Twitter](https://img.shields.io/badge/Twitter-%231DA1F2.svg?style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/yourhandle)
+          [![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:your.email@example.com)
+          [![Portfolio](https://img.shields.io/badge/Portfolio-%23000000.svg?style=for-the-badge&logo=firefox&logoColor=#FF7139)](https://yourportfolio.com)
+          [![Dev.to](https://img.shields.io/badge/dev.to-0A0A0A?style=for-the-badge&logo=dev.to&logoColor=white)](https://dev.to/yourprofile)
+
+          <br>
+
+          ![Profile Views](https://komarev.com/ghpvc/?username=${{ github.repository_owner }}&label=Profile%20Views&color=0e75b6&style=for-the-badge)
+          ![Followers](https://img.shields.io/github/followers/${{ github.repository_owner }}?label=Followers&style=for-the-badge&color=blue)
+
+          </div>
+
+          ---
+
+          <div align="center">
+            <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=100&section=footer" width="100%"/>
+          </div>
           EOF
 
-      - name: Commit and push changes
+      - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff --staged --quiet || git commit -m "chore: update DevOps profile [skip ci]"
+          git diff --staged --quiet || git commit -m "🚀 Update DevOps profile [skip ci]"
           git pull --rebase origin main || true
           git push origin main || git push --force origin main
