@@ -1,26 +1,51 @@
-name: Update Space Shooter GIF
-
+name: Update DevOps Metrics Dashboard
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 */6 * * *"  # Every 6 hours
   workflow_dispatch:
-
+  push:
+    branches:
+      - main
 permissions:
   contents: write
-
 jobs:
-  generate:
+  generate-metrics:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Create assets directory
-        run: mkdir -p assets
+        run: mkdir -p assets metrics
 
-      - name: Generate space shooter GIF
-        uses: czl9707/gh-space-shooter@v1
+      - name: Generate GitHub Stats
+        uses: anuraghazra/github-readme-stats@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          output-path: assets/space-shooter.gif
-          strategy: random
+          show_icons: true
+          theme: dark
+          include_all_commits: true
+
+      - name: Generate DevOps Workflow Visualization
+        run: |
+          echo "## CI/CD Pipeline Status" > metrics/pipeline-status.md
+          echo "Last Updated: $(date)" >> metrics/pipeline-status.md
+          
+      - name: Collect deployment metrics
+        run: |
+          # Example: Track deployment frequency
+          echo "Deployments this week: $(git log --since='7 days ago' --grep='deploy' --oneline | wc -l)" >> metrics/pipeline-status.md
+
+      - name: Generate infrastructure diagram
+        uses: terraform-docs/gh-actions@v1
+        if: hashFiles('**/*.tf') != ''
+        with:
+          working-dir: .
+          output-file: assets/infrastructure.md
+          
+      - name: Commit updated metrics
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: update DevOps metrics [skip ci]"
+          git push
