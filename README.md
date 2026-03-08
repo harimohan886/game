@@ -1,5 +1,12 @@
 # 👨‍💻 DevOps Engineer | Cloud & Automation Specialist
 
+## 🌐 Live 3D Portfolio
+
+[![Live Portfolio](https://img.shields.io/badge/🚀_Live_Portfolio-Visit_Now-00d4ff?style=for-the-badge)](https://harimohan886.github.io/game/)
+
+> **URL:** https://harimohan886.github.io/game/
+
+
 ## 📊 GitHub Activity
 
 ![Snake animation](assets/github-contribution-grid-snake-dark.svg)
